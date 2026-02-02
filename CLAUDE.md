@@ -1,315 +1,183 @@
 # CLAUDE.md - AI Assistant Development Guide
 
-This document provides essential context for AI assistants (like Claude) working with the BarnDartsDevTest repository.
+This document provides essential context for AI assistants (like Claude) working with the King Family Dart League repository.
 
 ## Project Overview
 
-**Repository:** BarnDartsDevTest
-**Purpose:** Development and testing environment for barn darts application
-**Status:** Initial development phase
+**Name:** King Family Dart League
+**Tech Stack:** Next.js 15, TypeScript, Tailwind CSS, Supabase
+**Purpose:** Mobile-optimized dart league website with admin portal
+**Theme:** Dark mode with red accents, Viking-themed branding
+
+## Key Features
+
+### Public Site
+- **Standings** (`/`) - League standings table with W-L-T, points, PCT
+- **Schedule** (`/schedule`) - Match schedule and results
+- **News** (`/news`) - League announcements
+- **Docs** (`/docs`) - Downloadable league documents
+
+### Admin Portal (`/admin`)
+- Magic link authentication
+- CRUD operations for seasons, teams, locations, matches, news, documents
+- Protected routes via middleware
 
 ## Repository Structure
 
 ```
 BarnDartsDevTest/
-├── src/                    # Main source code
-│   ├── components/         # UI components
-│   ├── services/           # Business logic and API services
-│   ├── utils/              # Utility functions and helpers
-│   └── types/              # Type definitions
-├── tests/                  # Test files
-│   ├── unit/               # Unit tests
-│   ├── integration/        # Integration tests
-│   └── e2e/                # End-to-end tests
-├── docs/                   # Documentation
-├── config/                 # Configuration files
-├── public/                 # Static assets
-├── scripts/                # Build and automation scripts
-├── .github/                # GitHub configuration
-│   └── workflows/          # CI/CD pipeline definitions
-├── package.json            # Node.js dependencies (if applicable)
-├── README.md               # Project overview
-├── CONTRIBUTING.md         # Contribution guidelines
-├── CLAUDE.md               # This file - AI assistant guide
-└── .gitignore              # Git ignore rules
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── admin/              # Admin portal pages
+│   │   │   ├── auth/callback/  # Auth callback route
+│   │   │   ├── documents/      # Document management
+│   │   │   ├── locations/      # Location management
+│   │   │   ├── login/          # Admin login
+│   │   │   ├── matches/        # Match management & scoring
+│   │   │   ├── news/           # News management
+│   │   │   ├── seasons/        # Season management
+│   │   │   └── teams/          # Team management
+│   │   ├── docs/               # Public documents page
+│   │   ├── news/               # Public news page
+│   │   ├── schedule/           # Public schedule page
+│   │   ├── globals.css         # Global styles
+│   │   ├── layout.tsx          # Root layout
+│   │   └── page.tsx            # Standings (home page)
+│   ├── components/
+│   │   ├── admin/              # Admin-specific components
+│   │   ├── docs/               # Document components
+│   │   ├── layout/             # Layout components (Navigation)
+│   │   ├── news/               # News components
+│   │   ├── schedule/           # Schedule components
+│   │   ├── standings/          # Standings components
+│   │   └── ui/                 # Shared UI (Logo)
+│   ├── lib/
+│   │   ├── admin-actions.ts    # Server actions for CRUD
+│   │   ├── data.ts             # Data fetching functions
+│   │   ├── supabase.ts         # Browser Supabase client
+│   │   └── supabase-server.ts  # Server Supabase client
+│   ├── types/
+│   │   └── index.ts            # TypeScript type definitions
+│   └── middleware.ts           # Auth middleware
+├── supabase/
+│   └── migrations/
+│       └── 001_initial_schema.sql  # Database schema
+├── public/                     # Static assets
+├── .env.local.example          # Environment variables template
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
 ```
 
 ## Quick Reference Commands
 
 ```bash
 # Install dependencies
-npm install          # or: yarn install / pnpm install
-
-# Development
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-
-# Testing
-npm run test         # Run all tests
-npm run test:unit    # Run unit tests only
-npm run test:e2e     # Run end-to-end tests
-npm run test:coverage # Run tests with coverage report
-
-# Code Quality
-npm run lint         # Run linter
-npm run lint:fix     # Auto-fix linting issues
-npm run format       # Format code with Prettier
-npm run typecheck    # Run TypeScript type checking
-```
-
-## Development Workflow
-
-### Branch Naming Convention
-
-- `feature/<description>` - New features
-- `bugfix/<description>` - Bug fixes
-- `hotfix/<description>` - Urgent production fixes
-- `docs/<description>` - Documentation updates
-- `refactor/<description>` - Code refactoring
-- `test/<description>` - Test additions or modifications
-- `claude/<session-id>` - AI assistant work branches
-
-### Commit Message Format
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-**Types:**
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation changes
-- `style` - Code style changes (formatting, semicolons, etc.)
-- `refactor` - Code refactoring without feature changes
-- `test` - Adding or modifying tests
-- `chore` - Build process or auxiliary tool changes
-- `perf` - Performance improvements
-
-**Examples:**
-```
-feat(scoring): add real-time score calculation
-fix(game): resolve player turn rotation bug
-docs(readme): update installation instructions
-test(scoring): add unit tests for score validation
-```
-
-### Pull Request Process
-
-1. Create a feature branch from the main branch
-2. Make changes and commit with descriptive messages
-3. Ensure all tests pass locally
-4. Push branch and create pull request
-5. Address code review feedback
-6. Squash and merge when approved
-
-## Code Style and Conventions
-
-### General Principles
-
-- Write clean, readable, self-documenting code
-- Follow DRY (Don't Repeat Yourself) principle
-- Keep functions small and focused on a single responsibility
-- Use meaningful variable and function names
-- Add comments only when the code isn't self-explanatory
-
-### Naming Conventions
-
-| Element | Convention | Example |
-|---------|------------|---------|
-| Variables | camelCase | `playerScore`, `currentTurn` |
-| Constants | UPPER_SNAKE_CASE | `MAX_SCORE`, `DEFAULT_PLAYERS` |
-| Functions | camelCase | `calculateScore()`, `getPlayerName()` |
-| Classes | PascalCase | `GameController`, `ScoreBoard` |
-| Files (components) | PascalCase | `PlayerCard.tsx`, `GameBoard.tsx` |
-| Files (utilities) | camelCase | `scoreUtils.ts`, `gameHelpers.ts` |
-| Test files | `*.test.ts` or `*.spec.ts` | `scoring.test.ts` |
-| CSS classes | kebab-case | `player-card`, `score-display` |
-
-### TypeScript Guidelines
-
-- Use strict TypeScript configuration
-- Define interfaces for all data structures
-- Avoid using `any` type; prefer `unknown` when type is uncertain
-- Use type guards for runtime type checking
-- Export types from a central `types/` directory
-
-### Error Handling
-
-- Always handle potential errors gracefully
-- Use try-catch blocks for async operations
-- Provide meaningful error messages
-- Log errors appropriately for debugging
-- Never swallow errors silently
-
-## Testing Guidelines
-
-### Test Structure
-
-```typescript
-describe('ComponentName or FunctionName', () => {
-  beforeEach(() => {
-    // Setup code
-  });
-
-  afterEach(() => {
-    // Cleanup code
-  });
-
-  it('should describe expected behavior', () => {
-    // Arrange
-    // Act
-    // Assert
-  });
-});
-```
-
-### Testing Best Practices
-
-- Write tests before or alongside code (TDD/BDD encouraged)
-- Test one thing per test case
-- Use descriptive test names that explain the expected behavior
-- Mock external dependencies
-- Aim for high coverage but prioritize meaningful tests
-- Include edge cases and error scenarios
-
-### Test Categories
-
-1. **Unit Tests** - Test individual functions and components in isolation
-2. **Integration Tests** - Test interactions between components
-3. **E2E Tests** - Test complete user workflows
-
-## AI Assistant Guidelines
-
-### When Working on This Codebase
-
-1. **Read First, Edit Later**
-   - Always read relevant files before making changes
-   - Understand the existing patterns and conventions
-   - Check for related tests and documentation
-
-2. **Minimal Changes**
-   - Make only necessary changes to complete the task
-   - Avoid unnecessary refactoring or "improvements"
-   - Don't add features that weren't requested
-
-3. **Test Your Changes**
-   - Run existing tests to ensure nothing breaks
-   - Add tests for new functionality
-   - Verify changes work as expected
-
-4. **Security Considerations**
-   - Never commit sensitive data (API keys, passwords, etc.)
-   - Validate all user inputs
-   - Be aware of OWASP top 10 vulnerabilities
-   - Use parameterized queries for database operations
-
-5. **Documentation**
-   - Update documentation when making significant changes
-   - Add inline comments for complex logic
-   - Update CLAUDE.md if project conventions change
-
-### Common Tasks
-
-#### Adding a New Feature
-1. Create a feature branch
-2. Write tests for the new feature
-3. Implement the feature
-4. Ensure all tests pass
-5. Update relevant documentation
-6. Commit and push changes
-
-#### Fixing a Bug
-1. Write a test that reproduces the bug
-2. Fix the bug
-3. Verify the test passes
-4. Check for similar issues elsewhere
-5. Commit with `fix:` prefix
-
-#### Refactoring Code
-1. Ensure tests exist for the code being refactored
-2. Make incremental changes
-3. Run tests after each change
-4. Keep commits atomic and focused
-
-## Environment Setup
-
-### Prerequisites
-
-- Node.js (LTS version recommended)
-- npm, yarn, or pnpm package manager
-- Git
-
-### Environment Variables
-
-Create a `.env.local` file for local development (never commit this file):
-
-```env
-# Application
-NODE_ENV=development
-PORT=3000
-
-# API Configuration
-API_URL=http://localhost:3001
-API_KEY=your_api_key_here
-
-# Database (if applicable)
-DATABASE_URL=your_database_url
-
-# Feature Flags
-ENABLE_DEBUG=true
-```
-
-### Local Development Setup
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd BarnDartsDevTest
-
-# Install dependencies
 npm install
 
-# Copy environment template
-cp .env.example .env.local
+# Development
+npm run dev          # Start dev server on localhost:3000
 
-# Start development server
-npm run dev
+# Build
+npm run build        # Production build
+npm run start        # Start production server
+
+# Code Quality
+npm run lint         # Run ESLint
 ```
 
-## Troubleshooting
+## Database Schema
 
-### Common Issues
+### Tables
+- **seasons** - League seasons (id, name, start_date, end_date, is_active)
+- **teams** - Teams/players per season (id, name, season_id)
+- **locations** - Match venues (id, name, address)
+- **matches** - Match schedule & scores (home_team, away_team, scores 0-3)
+- **news** - Announcements (title, content, is_published)
+- **documents** - Uploaded files (title, file_url, file_name)
+- **admins** - Admin users linked to Supabase auth
 
-| Issue | Solution |
-|-------|----------|
-| Dependencies not installing | Delete `node_modules` and `package-lock.json`, then run `npm install` |
-| Tests failing locally | Ensure environment variables are set correctly |
-| Build errors | Check for TypeScript errors with `npm run typecheck` |
-| Port already in use | Change PORT in `.env.local` or kill the process using the port |
+### Scoring System
+- Each match has **3 games**
+- Each game won = **1 point**
+- Scores entered as games won (0-3 each, total must = 3)
+- Standings show: P (played), W-L-T, F (games for), A (games against), PTS, PCT
 
-### Getting Help
+### Views
+- **team_standings** - Calculated standings with wins, losses, points
 
-1. Check existing documentation in `/docs`
-2. Search closed issues for similar problems
-3. Review recent commits for context
-4. Ask team members or create a new issue
+## Environment Variables
 
-## Additional Resources
+Required in `.env.local`:
 
-- [Project README](./README.md) - Project overview and quick start
-- [Contributing Guide](./CONTRIBUTING.md) - How to contribute
-- [Architecture Documentation](./docs/architecture.md) - System design details
-- [API Documentation](./docs/api.md) - API endpoints and usage
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+## Supabase Setup
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Run `supabase/migrations/001_initial_schema.sql` in SQL Editor
+3. Create a storage bucket named `documents` (public)
+4. Enable Email auth with magic link in Authentication settings
+5. Add admin user: Sign in, then run `supabase/setup-admin.sql`
+
+## Code Conventions
+
+### Component Structure
+- Server Components by default (async, fetch data directly)
+- Client Components only when needed ("use client" directive)
+- Server Actions for mutations (`"use server"`)
+
+### Styling
+- Tailwind CSS utilities
+- Dark theme colors: `#1a1a1a` (bg), `#2a2a2a` (cards), `#3a3a3a` (borders)
+- Primary color: `red-500` / `red-600`
+- Mobile-first responsive design
+
+### Data Flow
+1. Server Components fetch data via `lib/data.ts`
+2. Client Components use Supabase client directly
+3. Mutations use Server Actions in `lib/admin-actions.ts`
+4. Revalidation via `revalidatePath()`
+
+## Development Notes
+
+### Mock Data
+When Supabase is not configured, the app uses mock data defined in `lib/data.ts`. This allows UI development without a database.
+
+### Admin Authentication
+- Uses Supabase magic link (email-based)
+- Middleware protects `/admin/*` routes except `/admin/login`
+- Only users in `admins` table can access admin features (enforced via RLS)
+
+### Adding New Admin Features
+1. Add types to `src/types/index.ts`
+2. Create server actions in `src/lib/admin-actions.ts`
+3. Create admin page in `src/app/admin/[feature]/page.tsx`
+4. Add navigation link in `AdminSidebar.tsx`
+
+## Common Tasks
+
+### Adding a New Season
+1. Go to Admin > Seasons
+2. Click "Add Season"
+3. Enter name, dates, set active if current
+
+### Entering Match Scores
+1. Go to Admin > Matches
+2. Click edit on the match
+3. Enter games won by each team (must total 3)
+4. Check "Match Completed"
+5. Standings update automatically
+
+### Adding News
+1. Go to Admin > News
+2. Click "Add Article"
+3. Enter title and content
+4. Check "Publish immediately" or save as draft
 
 ---
-
-*This document should be kept up-to-date as the project evolves. When making significant changes to project structure, workflows, or conventions, please update this file accordingly.*
 
 **Last Updated:** 2026-02-02
